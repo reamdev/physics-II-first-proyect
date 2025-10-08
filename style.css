@@ -71,3 +71,17 @@ input[type="number"] {
 label {
   font-size: 13px;
 }
+
+#tooltip {
+  position: absolute;
+  background: rgba(20, 20, 20, 0.9);
+  color: white;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 13px;
+  pointer-events: none;
+  transform: translate(-50%, -120%);
+  white-space: nowrap;
+  display: none;
+  z-index: 10;
+}

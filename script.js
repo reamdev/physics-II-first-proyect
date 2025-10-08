@@ -1,9 +1,11 @@
 const canvas = document.getElementById("simCanvas");
 const ctx = canvas.getContext("2d");
 
-const k = 9e9; // Constante de Coulomb
-const scale = 50; // Escala píxeles/unidad
-const centralCharge = { x: 0, y: 0, q: 1e-6 }; // Carga central fija
+const tooltip = document.getElementById("tooltip");
+
+const k = 9e9;
+const scale = 50;
+const centralCharge = { x: 0, y: 0, q: 1e-6 };
 
 let charges = [];
 let selectedCharge = null;
@@ -47,7 +49,6 @@ function updateChargeList() {
     chargeList.appendChild(div);
   });
 
-  // Inputs dinámicos
   document.querySelectorAll(".charge-item input").forEach(input => {
     input.addEventListener("input", (e) => {
       const idx = e.target.dataset.index;
@@ -60,7 +61,6 @@ function updateChargeList() {
     });
   });
 
-  // Botones de eliminar
   document.querySelectorAll(".delete-btn").forEach(btn => {
     btn.addEventListener("click", (e) => {
       const idx = e.target.dataset.index;
@@ -99,39 +99,30 @@ function draw() {
     ctx.fillStyle = charge.q > 0 ? "red" : "blue";
     ctx.fill();
 
-    // Calcular fuerza sobre la carga central por esta carga
     const dx = centralCharge.x - charge.x;
     const dy = centralCharge.y - charge.y;
     const r = Math.sqrt(dx * dx + dy * dy);
-
-    if (r === 0) return; // evitar división entre 0
+    if (r === 0) return;
 
     const f = k * Math.abs(charge.q * centralCharge.q) / (r * r);
     const sameSign = charge.q * centralCharge.q > 0;
 
-    // Vector dirección (desde la carga hacia la central)
     const dirX = dx / r;
     const dirY = dy / r;
 
-    // Si son del mismo signo → repulsión (fuerza hacia afuera)
-    // Si son diferentes → atracción (fuerza hacia la carga central)
     const fx = f * (sameSign ? -dirX : dirX);
     const fy = f * (sameSign ? -dirY : dirY);
 
     totalFx += fx;
     totalFy += fy;
 
-    // Color de flecha: rojo = repulsión, azul = atracción
     const arrowColor = sameSign ? "red" : "blue";
-
-    // Dibuja flecha desde la carga
-    const arrowScale = 0.5 * scale; // tamaño fijo visual
+    const arrowScale = 0.5 * scale;
     drawArrow(px, py, fx / f * arrowScale, -fy / f * arrowScale, arrowColor);
 
     resultsHTML += `F${i + 1}: ${(f * 1e-3).toFixed(2)} mN (${sameSign ? "Repulsión" : "Atracción"})<br>`;
   });
 
-  // Carga central
   ctx.beginPath();
   ctx.arc(cx, cy, 10, 0, 2 * Math.PI);
   ctx.fillStyle = centralCharge.q > 0 ? "red" : "blue";
@@ -142,7 +133,6 @@ function draw() {
   resultsDiv.innerHTML = resultsHTML;
 }
 
-// === Dibuja flecha ===
 function drawArrow(x, y, dx, dy, color) {
   const angle = Math.atan2(dy, dx);
   ctx.beginPath();
@@ -174,8 +164,7 @@ canvas.addEventListener("mousedown", (e) => {
   for (let i = 0; i < charges.length; i++) {
     const px = cx + charges[i].x * scale;
     const py = cy - charges[i].y * scale;
-    const dist = Math.hypot(mx - px, my - py);
-    if (dist < 10) {
+    if (Math.hypot(mx - px, my - py) < 10) {
       selectedCharge = i;
       offsetX = (mx - px) / scale;
       offsetY = -(my - py) / scale;
@@ -185,20 +174,41 @@ canvas.addEventListener("mousedown", (e) => {
 });
 
 canvas.addEventListener("mousemove", (e) => {
-  if (selectedCharge === null) return;
   const rect = canvas.getBoundingClientRect();
   const mx = e.clientX - rect.left;
   const my = e.clientY - rect.top;
   const cx = canvas.width / 2;
   const cy = canvas.height / 2;
 
-  charges[selectedCharge].x = (mx - cx) / scale - offsetX;
-  charges[selectedCharge].y = -(my - cy) / scale - offsetY;
-  updateChargeList();
-  draw();
+  // Tooltip dinámico
+  let hovered = false;
+  for (const c of charges) {
+    const px = cx + c.x * scale;
+    const py = cy - c.y * scale;
+    if (Math.hypot(mx - px, my - py) < 12) {
+      tooltip.style.display = "block";
+      tooltip.style.left = `${e.clientX}px`;
+      tooltip.style.top = `${e.clientY}px`;
+      tooltip.innerText = c.q > 0 ? "Carga Positiva (+)" : "Carga Negativa (-)";
+      tooltip.style.backgroundColor = c.q > 0 ? "rgba(255,0,0,0.8)" : "rgba(0,0,255,0.8)";
+      hovered = true;
+      break;
+    }
+  }
+  if (!hovered) tooltip.style.display = "none";
+
+  if (selectedCharge !== null) {
+    charges[selectedCharge].x = (mx - cx) / scale - offsetX;
+    charges[selectedCharge].y = -(my - cy) / scale - offsetY;
+    updateChargeList();
+    draw();
+  }
 });
 
 canvas.addEventListener("mouseup", () => selectedCharge = null);
-canvas.addEventListener("mouseleave", () => selectedCharge = null);
+canvas.addEventListener("mouseleave", () => {
+  selectedCharge = null;
+  tooltip.style.display = "none";
+});
 
 draw();
