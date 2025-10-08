@@ -1,6 +1,5 @@
 const canvas = document.getElementById("simCanvas");
 const ctx = canvas.getContext("2d");
-
 const tooltip = document.getElementById("tooltip");
 
 const k = 9e9;
@@ -18,6 +17,7 @@ const resultsDiv = document.getElementById("results");
 document.getElementById("addCharge").addEventListener("click", () => {
   const type = document.getElementById("chargeType").value;
   const magnitude = parseFloat(document.getElementById("chargeValue").value) * 1e-6;
+  if (isNaN(magnitude)) return alert("Ingresa una magnitud válida");
   const q = type === "positive" ? magnitude : -magnitude;
   const newCharge = { x: Math.random() * 6 - 3, y: Math.random() * 4 - 2, q };
   charges.push(newCharge);
@@ -42,13 +42,14 @@ function updateChargeList() {
       <b>Carga ${i + 1}</b>
       <button class="delete-btn" data-index="${i}">❌</button>
       <label>Tipo: ${c.q > 0 ? "Positiva (+)" : "Negativa (-)"}</label>
-      <label>X: <input type="number" step="0.1" value="${c.x.toFixed(1)}" data-index="${i}" data-attr="x"></label>
-      <label>Y: <input type="number" step="0.1" value="${c.y.toFixed(1)}" data-index="${i}" data-attr="y"></label>
-      <label>Magnitud (μC): <input type="number" step="0.1" value="${Math.abs(c.q * 1e6).toFixed(1)}" data-index="${i}" data-attr="q"></label>
+      <label>X: <input type="number" step="0.1" value="${c.x.toFixed(2)}" data-index="${i}" data-attr="x"></label>
+      <label>Y: <input type="number" step="0.1" value="${c.y.toFixed(2)}" data-index="${i}" data-attr="y"></label>
+      <label>Magnitud (μC): <input type="number" step="0.1" value="${Math.abs(c.q * 1e6).toFixed(2)}" data-index="${i}" data-attr="q"></label>
     `;
     chargeList.appendChild(div);
   });
 
+  // Inputs dinámicos
   document.querySelectorAll(".charge-item input").forEach(input => {
     input.addEventListener("input", (e) => {
       const idx = e.target.dataset.index;
@@ -61,6 +62,7 @@ function updateChargeList() {
     });
   });
 
+  // Botones de eliminar
   document.querySelectorAll(".delete-btn").forEach(btn => {
     btn.addEventListener("click", (e) => {
       const idx = e.target.dataset.index;
@@ -78,7 +80,7 @@ function draw() {
   const cy = canvas.height / 2;
 
   let totalFx = 0, totalFy = 0;
-  let resultsHTML = "";
+  let resultsHTML = "<b>Resultados</b><br>";
 
   charges.forEach((charge, i) => {
     const px = cx + charge.x * scale;
@@ -99,17 +101,18 @@ function draw() {
     ctx.fillStyle = charge.q > 0 ? "red" : "blue";
     ctx.fill();
 
+    // Calcular fuerza sobre la carga central
     const dx = centralCharge.x - charge.x;
     const dy = centralCharge.y - charge.y;
-    const r = Math.sqrt(dx * dx + dy * dy);
-    if (r === 0) return;
+    const r = Math.sqrt(dx ** 2 + dy ** 2);
+    if (r < 1e-9) return;
 
-    const f = k * Math.abs(charge.q * centralCharge.q) / (r * r);
+    const f = k * Math.abs(charge.q * centralCharge.q) / (r ** 2);
     const sameSign = charge.q * centralCharge.q > 0;
-
     const dirX = dx / r;
     const dirY = dy / r;
 
+    // Sentido de la fuerza (repulsión o atracción)
     const fx = f * (sameSign ? -dirX : dirX);
     const fy = f * (sameSign ? -dirY : dirY);
 
@@ -117,22 +120,25 @@ function draw() {
     totalFy += fy;
 
     const arrowColor = sameSign ? "red" : "blue";
-    const arrowScale = 0.5 * scale;
+    const arrowScale = 0.4 * scale;
     drawArrow(px, py, fx / f * arrowScale, -fy / f * arrowScale, arrowColor);
 
-    resultsHTML += `F${i + 1}: ${(f * 1e-3).toFixed(2)} mN (${sameSign ? "Repulsión" : "Atracción"})<br>`;
+    resultsHTML += `F${i + 1}: ${(f * 1e-3).toFixed(2)} N (${sameSign ? "Repulsión" : "Atracción"})<br>`;
   });
 
+  // Carga central (se dibuja al final para que quede encima)
   ctx.beginPath();
   ctx.arc(cx, cy, 10, 0, 2 * Math.PI);
   ctx.fillStyle = centralCharge.q > 0 ? "red" : "blue";
   ctx.fill();
 
+  // Resultado total
   const totalF = Math.sqrt(totalFx ** 2 + totalFy ** 2);
-  resultsHTML += `<hr><b>Fuerza Total:</b> ${(totalF * 1e-3).toFixed(2)} mN`;
+  resultsHTML += `<hr><b>Fuerza Total:</b> ${(totalF * 1e-3).toFixed(2)} N`;
   resultsDiv.innerHTML = resultsHTML;
 }
 
+// === Dibuja flecha ===
 function drawArrow(x, y, dx, dy, color) {
   const angle = Math.atan2(dy, dx);
   ctx.beginPath();
@@ -197,11 +203,12 @@ canvas.addEventListener("mousemove", (e) => {
   }
   if (!hovered) tooltip.style.display = "none";
 
+  // Movimiento y actualización en vivo
   if (selectedCharge !== null) {
     charges[selectedCharge].x = (mx - cx) / scale - offsetX;
     charges[selectedCharge].y = -(my - cy) / scale - offsetY;
     updateChargeList();
-    draw();
+    draw(); // 🔥 ahora recalcula y redibuja todo mientras mueves
   }
 });
 
