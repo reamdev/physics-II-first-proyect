@@ -4,7 +4,7 @@ const tooltip = document.getElementById("tooltip");
 
 const k = 9e9;
 const scale = 50;
-const centralCharge = { x: 0, y: 0, q: 1e-6 };
+const centralCharge = { x: 0, y: 0, q: 1 };
 
 let charges = [];
 let selectedCharge = null;
@@ -16,7 +16,7 @@ const resultsDiv = document.getElementById("results");
 // === Agregar carga ===
 document.getElementById("addCharge").addEventListener("click", () => {
   const type = document.getElementById("chargeType").value;
-  const magnitude = parseFloat(document.getElementById("chargeValue").value) * 1e-6;
+  const magnitude = parseFloat(document.getElementById("chargeValue").value);
   if (isNaN(magnitude)) return alert("Ingresa una magnitud válida");
   const q = type === "positive" ? magnitude : -magnitude;
   const newCharge = { x: Math.random() * 6 - 3, y: Math.random() * 4 - 2, q };
@@ -38,13 +38,15 @@ function updateChargeList() {
   charges.forEach((c, i) => {
     const div = document.createElement("div");
     div.className = "charge-item";
+    console.log(c.q);
+
     div.innerHTML = `
       <b>Carga ${i + 1}</b>
       <button class="delete-btn" data-index="${i}">❌</button>
       <label>Tipo: ${c.q > 0 ? "Positiva (+)" : "Negativa (-)"}</label>
       <label>X: <input type="number" step="0.1" value="${c.x.toFixed(2)}" data-index="${i}" data-attr="x"></label>
       <label>Y: <input type="number" step="0.1" value="${c.y.toFixed(2)}" data-index="${i}" data-attr="y"></label>
-      <label>Magnitud (μC): <input type="number" step="0.1" value="${Math.abs(c.q * 1e6).toFixed(2)}" data-index="${i}" data-attr="q"></label>
+      <label>Magnitud (C): <input type="number" step="0.1" value="${(c.q).toFixed(2)}" data-index="${i}" data-attr="q"></label>
     `;
     chargeList.appendChild(div);
   });
@@ -57,7 +59,8 @@ function updateChargeList() {
       const value = parseFloat(e.target.value);
 
       if (attr === "x" || attr === "y") charges[idx][attr] = value;
-      if (attr === "q") charges[idx].q = Math.sign(charges[idx].q) * value * 1e-6;
+      if (attr === "q") charges[idx].q = Math.sign(charges[idx].q) * value;
+      updateChargeList();
       draw();
     });
   });
@@ -78,7 +81,7 @@ function updateChargeList() {
 function formatSci(num, fractionDigits = 2) {
   if (!isFinite(num)) return String(num);
   if (num === 0) return "0";
-  const s = num.toExponential(fractionDigits); // ej "3.02e-4" o "-1.23e+03"
+  const s = num.toExponential(fractionDigits); // ej "3.02e-4"
   const [mantissa, expStr] = s.split('e');
   const exp = parseInt(expStr, 10);
   return `${mantissa}×10<sup>${exp}</sup>`;
@@ -89,13 +92,15 @@ function draw() {
   const cx = canvas.width / 2;
   const cy = canvas.height / 2;
 
+  let totalFx = 0, totalFy = 0;
   let resultsHTML = "<b>Resultados</b><br>";
 
+  // === Por cada carga: dibujar y calcular contribución ===
   charges.forEach((charge, i) => {
     const px = cx + charge.x * scale;
     const py = cy - charge.y * scale;
 
-    // Línea discontinua hacia la carga central
+    // Línea discontinua hacia la carga
     ctx.setLineDash([6, 5]);
     ctx.beginPath();
     ctx.moveTo(cx, cy);
@@ -104,14 +109,14 @@ function draw() {
     ctx.stroke();
     ctx.setLineDash([]);
 
-    // Dibuja la carga
+    // Dibuja carga
     ctx.beginPath();
     ctx.arc(px, py, 8, 0, 2 * Math.PI);
     ctx.fillStyle = charge.q > 0 ? "red" : "blue";
     ctx.fill();
 
-    // === Cálculo escalar con la Ley de Coulomb ===
-    const dx = centralCharge.x - charge.x;
+    // === Cálculos ===
+    const dx = centralCharge.x - charge.x; // vector desde la carga fuente hacia el centro
     const dy = centralCharge.y - charge.y;
     const r = Math.sqrt(dx ** 2 + dy ** 2);
     if (r < 1e-9) {
@@ -119,29 +124,58 @@ function draw() {
       return;
     }
 
-    console.log(centralCharge);
-    const F = k * Math.abs(charge.q * centralCharge.q) / (r ** 2);
-    const tipo = (charge.q * centralCharge.q > 0) ? "Repulsión" : "Atracción";
+    // Módulo escalar
+    const Fm = k * Math.abs(centralCharge.q * charge.q) / (r ** 2);
 
-    // Dibuja flecha (solo dirección visual)
-    const dirX = dx / r;
-    const dirY = dy / r;
+    // Componentes vectoriales correctas (para sumar y obtener la resultante)
+    const Fx = k * centralCharge.q * charge.q * dx / Math.pow(r, 3);
+    const Fy = k * centralCharge.q * charge.q * dy / Math.pow(r, 3);
+
+    console.log(`Fuerza X: ${Fx}`);
+    console.log(`Fuerza Y: ${Fy}`);
+
+    totalFx += Fx;
+    totalFy += Fy;
+
+    const tipo = (centralCharge.q * charge.q > 0) ? "Repulsión" : "Atracción";
+
+    // Dibuja flecha indicativa (dirección de la fuerza sobre la carga central)
     const arrowColor = tipo === "Repulsión" ? "red" : "blue";
-    // arrowScale controla longitud de la flecha en el canvas (solo visual)
-    const arrowScale = 0.4 * scale * (tipo === "Repulsión" ? -1 : 1);
-    drawArrow(px, py, dirX * arrowScale, -dirY * arrowScale, arrowColor);
+    const arrowScale = 0.4 * scale;
+    // Normalizamos (uso Fx/Fm, Fy/Fm) y adaptamos signo Y para canvas
+    drawArrow(px, py, (Fx / Fm) * arrowScale, -(Fy / Fm) * arrowScale, arrowColor);
 
-    // Mostrar en notación científica (ej: 3.02×10<sup>-4</sup>)
-    resultsHTML += `<b>F${i + 1}</b>: ${formatSci(F)} N (${tipo})<br>`;
+    // Mostrar datos por carga en notación científica
+    resultsHTML += `<b>F${i + 1}</b>: ${formatSci(Fm)} N (${tipo})<br>`;
+    resultsHTML += `Fx = ${formatSci(Fx)} N<br>Fy = ${formatSci(Fy)} N<br><br>`;
   });
 
-  // Dibuja la carga central
+  // === Dibuja la carga central ===
   ctx.beginPath();
   ctx.arc(cx, cy, 10, 0, 2 * Math.PI);
   ctx.fillStyle = centralCharge.q > 0 ? "red" : "blue";
   ctx.fill();
 
-  // Insertar HTML (con <sup> renderizado correctamente)
+  // === Fuerza total (suma vectorial) ===
+  const F_total = Math.sqrt(totalFx ** 2 + totalFy ** 2);
+  const angleRad = Math.atan2(totalFy, totalFx); // en radianes, respecto +x
+  const angleDeg = angleRad * 180 / Math.PI;
+
+  resultsHTML += `<hr><b>Fuerza Total</b><br>`;
+  resultsHTML += `Fx = ${formatSci(totalFx)} N<br>`;
+  resultsHTML += `Fy = ${formatSci(totalFy)} N<br>`;
+  resultsHTML += `|F| = ${formatSci(F_total)} N<br>`;
+  resultsHTML += `Ángulo = ${angleDeg.toFixed(2)}° respecto a +x<br>`;
+
+  // === Dibujar flecha neta en el origen (verde) ===
+  if (F_total > 0) {
+    const netArrowScale = 0.6 * scale; // longitud visual fija (se ve la dirección)
+    const dxNet = (totalFx / F_total) * netArrowScale;
+    const dyNet = -(totalFy / F_total) * netArrowScale; // invertir para canvas
+    drawArrow(cx, cy, dxNet, dyNet, "green");
+  }
+
+  // Renderiza HTML con <sup>
   resultsDiv.innerHTML = resultsHTML;
 }
 
