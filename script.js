@@ -93,7 +93,7 @@ function draw() {
   const cy = canvas.height / 2;
 
   let totalFx = 0, totalFy = 0;
-  let resultsHTML = "<b>Resultados</b><br>";
+  let resultsHTML = "";
 
   // === Por cada carga: dibujar y calcular contribución ===
   charges.forEach((charge, i) => {

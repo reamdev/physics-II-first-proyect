@@ -4,6 +4,14 @@
   <meta charset="UTF-8">
   <title>Simulador de Fuerza Eléctrica</title>
   <link rel="stylesheet" href="style.css">
+  <!-- 🔹 MathJax para renderizar fórmulas -->
+  <script>
+    window.MathJax = {
+      tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
 </head>
 <body>
   <div class="left-panel">
@@ -29,12 +37,70 @@
   </div>
 
   <div class="right-panel">
-    <h2>Resultados</h2>
+    <div id="resultTitleContent">
+      <h2>Resultados</h2>
+      <button id="helpButton" title="Ayuda">❔</button>
+    </div>
+    <hr/>
     <div id="results"></div>
   </div>
 
   <div id="tooltip"></div>
 
+  <!-- Modal de ayuda -->
+  <div id="helpModal" class="modal">
+  <div class="modal-content">
+    <span id="closeModal" class="close">&times;</span>
+    <h2>Cómo se calcula la Fuerza Eléctrica ⚡</h2>
+
+    <p>La <b>Ley de Coulomb</b> describe la fuerza entre dos cargas puntuales:</p>
+
+    <p style="text-align:center; font-size:18px;">
+      $$F = k \cdot \frac{|q_1 q_2|}{r^2}$$
+    </p>
+
+    <p>Donde:</p>
+    <ul>
+      <li><b>F</b>: Magnitud de la fuerza eléctrica (N)</li>
+      <li><b>k</b>: Constante de Coulomb \( (9 \times 10^9 \, \text{N·m}^2/\text{C}^2) \)</li>
+      <li><b>q₁, q₂</b>: Cargas eléctricas en coulombs (C)</li>
+      <li><b>r</b>: Distancia entre las cargas (m)</li>
+    </ul>
+
+    <h3>Forma vectorial 🧭</h3>
+    <p>La dirección de la fuerza depende del signo de las cargas. En forma vectorial:</p>
+
+    <p style="text-align:center; font-size:18px;">
+      $$\vec{F} = k \cdot \frac{q_1 q_2}{r^3} \, \vec{r}$$
+    </p>
+
+    <p>Donde \( \vec{r} \) es el vector que une una carga con la otra:</p>
+
+    <p style="text-align:center; font-size:18px;">
+      $$\vec{r} = (x_2 - x_1)\hat{i} + (y_2 - y_1)\hat{j}$$
+    </p>
+
+    <h3>Ejemplo 📘</h3>
+    <p>Supón una carga de \( +1\,\text{C} \) en el punto \( (0,0) \), y otra de \( -2\,\text{C} \) en el punto \( (2,1) \).</p>
+
+    <p>1️⃣ Calculas la distancia:</p>
+    <p style="text-align:center; font-size:18px;">
+      $$r = \sqrt{(2 - 0)^2 + (1 - 0)^2} = \sqrt{5} \approx 2.236$$
+    </p>
+
+    <p>2️⃣ Aplicas la ley de Coulomb:</p>
+    <p style="text-align:center; font-size:18px;">
+      $$F = 9\times10^9 \cdot \frac{|(+1)(-2)|}{(2.236)^2} = 3.6\times10^9 \, \text{N}$$
+    </p>
+
+    <p>3️⃣ Como las cargas son opuestas, la fuerza es de <b>atracción</b>.</p>
+
+    <hr/>
+    <p style="font-size:14px; color:#aaa;">💡 Consejo: Las fórmulas se calculan automáticamente en el simulador usando estos mismos principios, pero con la suma vectorial de todas las fuerzas.</p>
+  </div>
+
+
+  <script src="modal.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
