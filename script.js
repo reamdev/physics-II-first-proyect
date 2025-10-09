@@ -74,19 +74,28 @@ function updateChargeList() {
 }
 
 // === Dibujo principal ===
+// Helper: formatea a notación científica tipo 3.02×10<sup>-4</sup>
+function formatSci(num, fractionDigits = 2) {
+  if (!isFinite(num)) return String(num);
+  if (num === 0) return "0";
+  const s = num.toExponential(fractionDigits); // ej "3.02e-4" o "-1.23e+03"
+  const [mantissa, expStr] = s.split('e');
+  const exp = parseInt(expStr, 10);
+  return `${mantissa}×10<sup>${exp}</sup>`;
+}
+
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   const cx = canvas.width / 2;
   const cy = canvas.height / 2;
 
-  let totalFx = 0, totalFy = 0;
   let resultsHTML = "<b>Resultados</b><br>";
 
   charges.forEach((charge, i) => {
     const px = cx + charge.x * scale;
     const py = cy - charge.y * scale;
 
-    // Línea discontinua
+    // Línea discontinua hacia la carga central
     ctx.setLineDash([6, 5]);
     ctx.beginPath();
     ctx.moveTo(cx, cy);
@@ -95,46 +104,44 @@ function draw() {
     ctx.stroke();
     ctx.setLineDash([]);
 
-    // Dibuja carga
+    // Dibuja la carga
     ctx.beginPath();
     ctx.arc(px, py, 8, 0, 2 * Math.PI);
     ctx.fillStyle = charge.q > 0 ? "red" : "blue";
     ctx.fill();
 
-    // Calcular fuerza sobre la carga central
+    // === Cálculo escalar con la Ley de Coulomb ===
     const dx = centralCharge.x - charge.x;
     const dy = centralCharge.y - charge.y;
     const r = Math.sqrt(dx ** 2 + dy ** 2);
-    if (r < 1e-9) return;
+    if (r < 1e-9) {
+      resultsHTML += `<b>F${i + 1}</b>: Indefinida (r = 0)<br>`;
+      return;
+    }
 
-    const f = k * Math.abs(charge.q * centralCharge.q) / (r ** 2);
-    const sameSign = charge.q * centralCharge.q > 0;
+    console.log(centralCharge);
+    const F = k * Math.abs(charge.q * centralCharge.q) / (r ** 2);
+    const tipo = (charge.q * centralCharge.q > 0) ? "Repulsión" : "Atracción";
+
+    // Dibuja flecha (solo dirección visual)
     const dirX = dx / r;
     const dirY = dy / r;
+    const arrowColor = tipo === "Repulsión" ? "red" : "blue";
+    // arrowScale controla longitud de la flecha en el canvas (solo visual)
+    const arrowScale = 0.4 * scale * (tipo === "Repulsión" ? -1 : 1);
+    drawArrow(px, py, dirX * arrowScale, -dirY * arrowScale, arrowColor);
 
-    // Sentido de la fuerza (repulsión o atracción)
-    const fx = f * (sameSign ? -dirX : dirX);
-    const fy = f * (sameSign ? -dirY : dirY);
-
-    totalFx += fx;
-    totalFy += fy;
-
-    const arrowColor = sameSign ? "red" : "blue";
-    const arrowScale = 0.4 * scale;
-    drawArrow(px, py, fx / f * arrowScale, -fy / f * arrowScale, arrowColor);
-
-    resultsHTML += `F${i + 1}: ${(f * 1e-3).toFixed(2)} N (${sameSign ? "Repulsión" : "Atracción"})<br>`;
+    // Mostrar en notación científica (ej: 3.02×10<sup>-4</sup>)
+    resultsHTML += `<b>F${i + 1}</b>: ${formatSci(F)} N (${tipo})<br>`;
   });
 
-  // Carga central (se dibuja al final para que quede encima)
+  // Dibuja la carga central
   ctx.beginPath();
   ctx.arc(cx, cy, 10, 0, 2 * Math.PI);
   ctx.fillStyle = centralCharge.q > 0 ? "red" : "blue";
   ctx.fill();
 
-  // Resultado total
-  const totalF = Math.sqrt(totalFx ** 2 + totalFy ** 2);
-  resultsHTML += `<hr><b>Fuerza Total:</b> ${(totalF * 1e-3).toFixed(2)} N`;
+  // Insertar HTML (con <sup> renderizado correctamente)
   resultsDiv.innerHTML = resultsHTML;
 }
 
