@@ -1,86 +1,177 @@
+/* ===== ESTILOS BASE Y RESPONSIVE ===== */
+* {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
   font-family: Arial, sans-serif;
-  display: flex;
-  height: 100vh;
   background-color: #0e1118;
   color: white;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto; /* 🔥 Scroll de toda la página */
 }
 
+/* Header principal */
+.main-header {
+  background: linear-gradient(135deg, #1a1d26 0%, #2a2f3a 100%);
+  padding: 20px;
+  text-align: center;
+  border-bottom: 3px solid #007bff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  flex-shrink: 0;
+}
+
+.main-header h1 {
+  margin: 0 0 8px 0;
+  font-size: 2rem;
+  color: #fff;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.subtitle {
+  margin: 0;
+  color: #ccc;
+  font-size: 1rem;
+  font-weight: 300;
+}
+
+/* Contenedor principal */
+.main-container {
+  display: flex;
+  flex: 1;
+  flex-direction: row;
+  min-height: auto; /* 🔥 Altura automática */
+  overflow: visible;
+  max-height: calc(100vh - 103px);
+}
+
+/* Paneles laterales - SIN SCROLL en desktop */
 .left-panel, .right-panel {
-  width: 260px;
   background-color: #1a1d26;
   padding: 15px;
   display: flex;
   flex-direction: column;
   overflow-y: auto;
+  transition: all 0.3s ease;
+}
+
+.left-panel {
+  width: 300px;
+  min-width: 250px;
+  flex-shrink: 0;
 }
 
 .right-panel {
-  width: 300px;
+  width: 320px;
+  min-width: 280px;
+  flex-shrink: 0;
 }
 
 .left-panel h2, .right-panel h2 {
   margin-bottom: 10px;
+  font-size: 1.3rem;
+  color: #fff;
 }
 
+/* Contenedor del canvas */
+.canvas-container {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+  min-width: 0;
+  min-height: 600px; /* 🔥 Forzar altura mínima */
+}
+
+canvas {
+  background-color: #202530;
+  border: 1px solid #444;
+  border-radius: 8px;
+  max-width: 100%;
+  height: auto;
+  min-height: 500px; /* 🔥 Altura mínima del canvas */
+}
+
+/* Contenedor de resultados - SIN SCROLL en desktop */
+.results-container {
+  flex: 1;
+  overflow: visible;
+  padding: 5px 0;
+  min-height: 400px; /* 🔥 Forzar altura mínima */
+}
+
+/* ===== SCROLL SOLO PARA LISTAS INTERNAS ===== */
+.charge-list {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  max-height: none;
+  min-height: 200px; /* 🔥 Altura mínima para que crezca */
+}
+
+/* ===== COMPONENTES RESPONSIVE ===== */
 .add-section {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  margin-bottom: 15px;
+  gap: 12px;
+  margin-bottom: 20px;
+  background: #252935;
+  padding: 15px;
+  border-radius: 8px;
+  border-left: 4px solid #007bff;
+  flex-shrink: 0;
 }
 
 button {
   background-color: #007bff;
   border: none;
   color: white;
-  padding: 6px;
+  padding: 10px;
   cursor: pointer;
-  border-radius: 4px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
 }
 
 button:hover {
   background-color: #0056b3;
-}
-
-.canvas-container {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-canvas {
-  background-color: #202530;
-  border: 1px solid #444;
+  transform: translateY(-1px);
 }
 
 .charge-item {
   background-color: #2a2f3a;
-  padding: 8px;
-  border-radius: 6px;
-  margin-bottom: 8px;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 10px;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
   font-size: 13px;
+  flex-shrink: 0;
 }
 
-input[type="number"] {
-  width: 60px;
+.charge-item input[type="number"] {
+  width: 80px;
   margin-left: 4px;
 }
 
 label {
   font-size: 13px;
+  font-weight: 600;
 }
 
+/* Tooltip */
 #tooltip {
   position: absolute;
-  background: rgba(20, 20, 20, 0.9);
+  background: rgba(20, 20, 20, 0.95);
   color: white;
-  padding: 6px 10px;
+  padding: 8px 12px;
   border-radius: 6px;
   font-size: 13px;
   pointer-events: none;
@@ -88,30 +179,32 @@ label {
   white-space: nowrap;
   display: none;
   z-index: 10;
+  border: 1px solid #444;
 }
 
-/* --- Botón de ayuda flotante --- */
+/* Botón de ayuda */
 #resultTitleContent {
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
 }
 
 #helpButton {
   display: flex;
   justify-content: center;
-  margin-top: 10px;
-  margin-left: 10px;
   align-items: center;
   background-color: #007bff;
   color: white;
   border: none;
   border-radius: 50%;
-  width: 20px;
-  height: 20px;
-  font-size: 0.75rem;
+  width: 28px;
+  height: 28px;
+  font-size: 0.8rem;
   cursor: pointer;
   box-shadow: 0 2px 10px rgba(0,0,0,0.4);
-  transition: background-color 0.3s ease, transform 0.2s;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
 }
 
 #helpButton:hover {
@@ -119,12 +212,11 @@ label {
   transform: scale(1.1);
 }
 
-/* --- Modal --- */
-/* 🔹 Fondo del modal (sombra oscura) */
+/* Modal */
 .modal {
   display: none;
   position: fixed;
-  z-index: 100;
+  z-index: 1000;
   left: 0;
   top: 0;
   width: 100%;
@@ -133,76 +225,251 @@ label {
   justify-content: center;
   align-items: center;
   padding: 20px;
-  overflow: hidden; /* Evita que toda la ventana tenga scroll */
 }
 
-/* 🔹 Contenedor principal del contenido */
 .modal-content {
   background-color: #1e222c;
   color: #fff;
-  padding: 20px;
-  border-radius: 10px;
+  padding: 25px;
+  border-radius: 12px;
   width: 90%;
   max-width: 700px;
-  max-height: 80vh; /* 🔸 Altura máxima del modal */
-  overflow-y: auto; /* 🔸 Scroll interno */
-  box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
-  scrollbar-width: thin; /* Firefox */
-  scrollbar-color: #007bff #2a2f3a; /* Firefox */
-}
-
-/* 🔹 Scrollbar estilo (para Chrome, Edge, etc.) */
-::-webkit-scrollbar {
-  width: 8px;
-}
-
-::-webkit-scrollbar-thumb {
-  background-color: #007bff;
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-track {
-  background-color: #2a2f3a;
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: 0 0 25px rgba(0, 0, 0, 0.6);
+  position: relative;
 }
 
 .close {
   color: #ccc;
-  float: right;
-  font-size: 24px;
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  font-size: 28px;
+  font-weight: bold;
   cursor: pointer;
   transition: color 0.2s;
+  z-index: 1001;
 }
 
 .close:hover {
   color: #fff;
 }
 
-.modal-content {
-  position: relative; /* necesario para posicionar hijos absolut */
-  max-height: 80vh; /* altura máxima */
-  overflow-y: auto; /* scroll si contenido excede */
-  padding: 20px;
+/* ===== SCROLLBARS PERSONALIZADAS ===== */
+.charge-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.charge-list::-webkit-scrollbar-thumb {
+  background-color: #007bff;
+  border-radius: 4px;
+}
+
+.charge-list::-webkit-scrollbar-track {
+  background-color: #2a2f3a;
+}
+
+/* Firefox para lista de cargas */
+.charge-list {
+  scrollbar-width: thin;
+  scrollbar-color: #007bff #2a2f3a;
+}
+
+/* ===== MEDIA QUERIES RESPONSIVE ===== */
+
+/* Tablets grandes y laptops pequeñas */
+@media (max-width: 1024px) {
+  .main-container {
+    flex-direction: column;
+    height: auto;
+  }
+  
+  .left-panel, .right-panel {
+    width: 100%;
+    min-width: auto;
+    max-height: 300px;
+    overflow-y: auto; /* 🔥 Scroll individual en móvil/tablet */
+    min-height: auto; /* 🔥 Reset altura mínima */
+  }
+  
+  .canvas-container {
+    order: -1;
+    min-height: 400px;
+    align-items: center; /* 🔥 Centrar en móvil */
+  }
+  
+  canvas {
+    min-height: 400px; /* 🔥 Altura ajustada para móvil */
+  }
+  
+  .results-container {
+    min-height: auto; /* 🔥 Reset altura mínima */
+  }
+  
+  .main-header h1 {
+    font-size: 1.7rem;
+  }
+  
+  .subtitle {
+    font-size: 0.9rem;
+  }
+  
+  /* En móvil/tablet, los paneles tienen scroll individual */
+  .left-panel::-webkit-scrollbar,
+  .right-panel::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  .left-panel::-webkit-scrollbar-thumb,
+  .right-panel::-webkit-scrollbar-thumb {
+    background-color: #007bff;
+    border-radius: 4px;
+  }
+  
+  .left-panel::-webkit-scrollbar-track,
+  .right-panel::-webkit-scrollbar-track {
+    background-color: #2a2f3a;
+  }
+}
+
+/* Tablets pequeñas */
+@media (max-width: 768px) {
+  .main-header {
+    padding: 15px;
+  }
+  
+  .main-header h1 {
+    font-size: 1.5rem;
+  }
+  
+  .subtitle {
+    font-size: 0.85rem;
+  }
+  
+  .left-panel, .right-panel {
+    padding: 12px;
+    max-height: 250px;
+  }
+  
+  .canvas-container {
+    min-height: 350px;
+  }
+  
+  canvas {
+    min-height: 350px;
+  }
+  
+  .add-section {
+    padding: 12px;
+  }
+  
+  .charge-item {
+    padding: 10px;
+  }
+}
+
+/* Móviles */
+@media (max-width: 480px) {
+  body {
+    font-size: 14px;
+  }
+  
+  .main-header {
+    padding: 12px 10px;
+  }
+  
+  .main-header h1 {
+    font-size: 1.3rem;
+  }
+  
+  .subtitle {
+    font-size: 0.8rem;
+  }
+  
+  .left-panel, .right-panel {
+    padding: 10px;
+    max-height: 220px;
+  }
+  
+  .left-panel h2, .right-panel h2 {
+    font-size: 1.1rem;
+  }
+  
+  .canvas-container {
+    min-height: 300px;
+    padding: 5px;
+  }
+  
+  canvas {
+    min-height: 300px;
+  }
+  
+  .add-section {
+    padding: 10px;
+    gap: 8px;
+  }
+  
+  button {
+    padding: 8px;
+    font-size: 13px;
+  }
+  
+  .charge-item {
+    padding: 8px;
+    font-size: 12px;
+  }
+  
+  .modal-content {
+    padding: 20px 15px;
+  }
+  
+  #helpButton {
+    width: 24px;
+    height: 24px;
+    font-size: 0.7rem;
+  }
+}
+
+/* Pantallas muy pequeñas (móviles en portrait) */
+@media (max-width: 360px) {
+  .main-header h1 {
+    font-size: 1.1rem;
+  }
+  
+  .subtitle {
+    font-size: 0.75rem;
+  }
+  
+  .left-panel, .right-panel {
+    max-height: 200px;
+  }
+  
+  .canvas-container {
+    min-height: 250px;
+  }
+  
+  canvas {
+    min-height: 250px;
+  }
+}
+
+/* Scrollbars generales para toda la página */
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #007bff;
+  border-radius: 6px;
+}
+
+::-webkit-scrollbar-track {
   background-color: #1a1d26;
-  border-radius: 8px;
-  color: white;
 }
 
-.modal-content .close {
-  position: absolute;
-  top: 10px;
-  right: 15px;
-  font-size: 28px;
-  font-weight: bold;
-  color: white;
-  cursor: pointer;
-  z-index: 10;
-}
-
-.modal-content .close:hover {
-  color: #ff0000;
-}
-
-.modal-content .close {
-  position: sticky;
-  top: 0;
+/* Firefox para scroll general */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #007bff #1a1d26;
 }

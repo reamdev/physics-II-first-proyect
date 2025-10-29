@@ -2,7 +2,8 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Simulador de Fuerza Eléctrica</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calculadora de Fuerza Eléctrica Vectorial</title>
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="input-select.css">
 
@@ -16,36 +17,44 @@
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
 </head>
 <body>
-  <div class="left-panel">
-    <h2>Configuración de cargas</h2>
+  <!-- Header con título -->
+  <header class="main-header">
+    <h1>Calculadora de Fuerza Eléctrica Vectorial</h1>
+    <p class="subtitle">Simula y calcula fuerzas electrostáticas entre cargas puntuales</p>
+  </header>
 
-    <div class="add-section">
-      <label>Tipo:</label>
-      <select id="chargeType">
-        <option value="positive">Positiva (+)</option>
-        <option value="negative">Negativa (-)</option>
-      </select>
-      <label>Magnitud (C):</label>
-      <input type="number" id="chargeValue" value="1" step="0.5" min="0.1">
-      <button id="addCharge">Agregar carga</button>
-      <button id="clearAll">Limpiar</button>
+  <div class="main-container">
+    <div class="left-panel">
+      <h2>Configuración de cargas</h2>
+
+      <div class="add-section">
+        <label>Tipo:</label>
+        <select id="chargeType">
+          <option value="positive">Positiva ($+$)</option>
+          <option value="negative">Negativa ($-$)</option>
+        </select>
+        <label>Magnitud ($C$):</label>
+        <input type="number" id="chargeValue" value="1" step="0.5" min="0.1">
+        <button id="addCharge">Agregar carga</button>
+        <button id="clearAll">Limpiar</button>
+      </div>
+
+      <div id="chargeList" class="charge-list"></div>
     </div>
 
-    <div id="chargeList" class="charge-list"></div>
-  </div>
-
-  <div class="canvas-container">
-    <canvas id="simCanvas" width="700" height="500"></canvas>
-  </div>
-
-  <div class="right-panel">
-    <div id="resultTitleContent">
-      <h2>Resultados</h2>
-      <button id="helpButton" title="Ayuda">❔</button>
+    <div class="canvas-container">
+      <canvas id="simCanvas" width="780" height="500"></canvas>
     </div>
 
-    <div id="results" style="flex: 1; overflow-y: auto; max-height: calc(100vh - 150px); padding: 5px 0;">
-      <hr/>
+    <div class="right-panel">
+      <div id="resultTitleContent">
+        <h2>Resultados</h2>
+        <button id="helpButton" title="Ayuda">❔</button>
+      </div>
+
+      <div id="results" class="results-container">
+        <hr/>
+      </div>
     </div>
   </div>
 
@@ -53,54 +62,55 @@
 
   <!-- Modal de ayuda -->
   <div id="helpModal" class="modal">
-  <div class="modal-content">
-    <span id="closeModal" class="close">&times;</span>
-    <h2>Cómo se calcula la Fuerza Eléctrica ⚡</h2>
+    <div class="modal-content">
+      <span id="closeModal" class="close">&times;</span>
+      <h2>Cómo se calcula la Fuerza Eléctrica ⚡</h2>
 
-    <p>La <b>Ley de Coulomb</b> describe la fuerza entre dos cargas puntuales:</p>
+      <p>La <b>Ley de Coulomb</b> describe la fuerza entre dos cargas puntuales:</p>
 
-    <p style="text-align:center; font-size:18px;">
-      $$F = k \cdot \frac{|q_1 q_2|}{r^2}$$
-    </p>
+      <p style="text-align:center; font-size:18px;">
+        $$F = k \cdot \frac{|q_1 q_2|}{r^2}$$
+      </p>
 
-    <p>Donde:</p>
-    <ul>
-      <li><b>F</b>: Magnitud de la fuerza eléctrica (N)</li>
-      <li><b>k</b>: Constante de Coulomb \( (9 \times 10^9 \, \text{N·m}^2/\text{C}^2) \)</li>
-      <li><b>q₁, q₂</b>: Cargas eléctricas en coulombs (C)</li>
-      <li><b>r</b>: Distancia entre las cargas (m)</li>
-    </ul>
+      <p>Donde:</p>
+      <ul>
+        <li><b>F</b>: Magnitud de la fuerza eléctrica (N)</li>
+        <li><b>k</b>: Constante de Coulomb \( (9 \times 10^9 \, \text{N·m}^2/\text{C}^2) \)</li>
+        <li><b>q₁, q₂</b>: Cargas eléctricas en coulombs (C)</li>
+        <li><b>r</b>: Distancia entre las cargas (m)</li>
+      </ul>
 
-    <h3>Forma vectorial 🧭</h3>
-    <p>La dirección de la fuerza depende del signo de las cargas. En forma vectorial:</p>
+      <h3>Forma vectorial 🧭</h3>
+      <p>La dirección de la fuerza depende del signo de las cargas. En forma vectorial:</p>
 
-    <p style="text-align:center; font-size:18px;">
-      $$\vec{F} = k \cdot \frac{q_1 q_2}{r^3} \, \vec{r}$$
-    </p>
+      <p style="text-align:center; font-size:18px;">
+        $$\vec{F} = k \cdot \frac{q_1 q_2}{r^3} \, \vec{r}$$
+      </p>
 
-    <p>Donde \( \vec{r} \) es el vector que une una carga con la otra:</p>
+      <p>Donde \( \vec{r} \) es el vector que une una carga con la otra:</p>
 
-    <p style="text-align:center; font-size:18px;">
-      $$\vec{r} = (x_2 - x_1)\hat{i} + (y_2 - y_1)\hat{j}$$
-    </p>
+      <p style="text-align:center; font-size:18px;">
+        $$\vec{r} = (x_2 - x_1)\hat{i} + (y_2 - y_1)\hat{j}$$
+      </p>
 
-    <h3>Ejemplo 📘</h3>
-    <p>Supón una carga de \( +1\,\text{C} \) en el punto \( (0,0) \), y otra de \( -2\,\text{C} \) en el punto \( (2,1) \).</p>
+      <h3>Ejemplo 📘</h3>
+      <p>Supón una carga de \( +1\,\text{C} \) en el punto \( (0,0) \), y otra de \( -2\,\text{C} \) en el punto \( (2,1) \).</p>
 
-    <p>1️⃣ Calculas la distancia:</p>
-    <p style="text-align:center; font-size:18px;">
-      $$r = \sqrt{(2 - 0)^2 + (1 - 0)^2} = \sqrt{5} \approx 2.236$$
-    </p>
+      <p>1️⃣ Calculas la distancia:</p>
+      <p style="text-align:center; font-size:18px;">
+        $$r = \sqrt{(2 - 0)^2 + (1 - 0)^2} = \sqrt{5} \approx 2.236$$
+      </p>
 
-    <p>2️⃣ Aplicas la ley de Coulomb:</p>
-    <p style="text-align:center; font-size:18px;">
-      $$F = 9\times10^9 \cdot \frac{|(+1)(-2)|}{(2.236)^2} = 3.6\times10^9 \, \text{N}$$
-    </p>
+      <p>2️⃣ Aplicas la ley de Coulomb:</p>
+      <p style="text-align:center; font-size:18px;">
+        $$F = 9\times10^9 \cdot \frac{|(+1)(-2)|}{(2.236)^2} = 3.6\times10^9 \, \text{N}$$
+      </p>
 
-    <p>3️⃣ Como las cargas son opuestas, la fuerza es de <b>atracción</b>.</p>
+      <p>3️⃣ Como las cargas son opuestas, la fuerza es de <b>atracción</b>.</p>
 
-    <hr/>
-    <p style="font-size:14px; color:#aaa;">💡 Consejo: Las fórmulas se calculan automáticamente en el simulador usando estos mismos principios, pero con la suma vectorial de todas las fuerzas.</p>
+      <hr/>
+      <p style="font-size:14px; color:#aaa;">💡 Consejo: Las fórmulas se calculan automáticamente en el simulador usando estos mismos principios, pero con la suma vectorial de todas las fuerzas.</p>
+    </div>
   </div>
 
   <script src="modal.js"></script>

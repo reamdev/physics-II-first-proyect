@@ -1,4 +1,4 @@
-/* ===== INPUTS Y SELECTS MEJORADOS ===== */
+/* ===== INPUTS Y SELECTS MEJORADOS Y RESPONSIVE ===== */
 
 /* Inputs de texto y número */
 input[type="number"],
@@ -7,8 +7,8 @@ input[type="text"] {
   border: 2px solid #3a3f4a;
   border-radius: 6px;
   color: white;
-  padding: 8px 10px;
-  font-size: 13px;
+  padding: 10px 12px;
+  font-size: 14px;
   transition: all 0.3s ease;
   width: 100%;
   box-sizing: border-box;
@@ -30,23 +30,24 @@ input[type="text"]:hover {
 /* SELECTS DIFERENCIABLES PERO DISCRETOS */
 select {
   background: #2a2f3a;
-  border: 2px solid #007bff; /* Borde azul para diferenciar */
+  border: 2px solid #007bff;
+  /* Borde azul para diferenciar */
   border-radius: 6px;
   color: white;
-  padding: 9px 12px;
-  font-size: 13px;
+  padding: 10px 12px;
+  font-size: 14px;
   font-weight: 600;
   transition: all 0.3s ease;
   width: 100%;
   cursor: pointer;
   appearance: none;
-  
+
   /* Icono moderado */
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 14 14' fill='none'%3E%3Cpath d='M3 5L7 9L11 5' stroke='%23007bff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 12px center;
   background-size: 14px;
-  
+
   /* Sombra sutil */
   box-shadow: 0 2px 6px rgba(0, 123, 255, 0.15);
 }
@@ -71,16 +72,16 @@ select:focus {
   border: 2px solid #007bff;
   border-radius: 6px;
   color: white;
-  padding: 9px 12px;
-  font-size: 13px;
+  padding: 10px 12px;
+  font-size: 14px;
   font-weight: 600;
   text-align: center;
-  
+
   /* Icono un poco más visible */
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='M4 6L8 10L12 6' stroke='%23007bff' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
   background-position: right 12px center;
   background-size: 16px;
-  
+
   /* Sombra un poco más pronunciada que los inputs */
   box-shadow: 0 2px 8px rgba(0, 123, 255, 0.2);
 }
@@ -100,7 +101,7 @@ select option {
   background: #2a2f3a;
   color: white;
   padding: 10px;
-  font-size: 13px;
+  font-size: 14px;
 }
 
 /* Colores específicos para cada tipo de carga */
@@ -137,7 +138,7 @@ select option {
 .add-section label {
   font-weight: 600;
   color: #e0e0e0;
-  font-size: 13px;
+  font-size: 14px;
   margin-bottom: -8px;
 }
 
@@ -146,8 +147,8 @@ select option {
   width: 80px;
   background: #323846;
   border: 1px solid #444;
-  padding: 4px 6px;
-  font-size: 12px;
+  padding: 6px 8px;
+  font-size: 13px;
 }
 
 .charge-item input[type="number"]:focus {
@@ -182,7 +183,7 @@ input:valid {
 /* Placeholder personalizado */
 input::placeholder {
   color: #888;
-  font-size: 12px;
+  font-size: 13px;
 }
 
 /* Quitar flechas de inputs number */
@@ -205,8 +206,8 @@ input[type="number"] {
 
 .form-actions button {
   flex: 1;
-  padding: 10px;
-  font-size: 13px;
+  padding: 12px;
+  font-size: 14px;
   font-weight: 600;
 }
 
@@ -231,4 +232,55 @@ input[type="number"] {
 .charge-type-negative {
   color: #4ecdc4;
   font-weight: bold;
+}
+
+/* Responsive para inputs y selects */
+@media (max-width: 480px) {
+
+  input[type="number"],
+  input[type="text"],
+  select {
+    padding: 8px 10px;
+    font-size: 13px;
+  }
+
+  .add-section {
+    padding: 12px;
+    gap: 10px;
+  }
+
+  .add-section label {
+    font-size: 13px;
+  }
+
+  .form-actions button {
+    padding: 10px;
+    font-size: 13px;
+  }
+
+  .charge-item input[type="number"] {
+    width: 70px;
+    padding: 5px 6px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 360px) {
+
+  input[type="number"],
+  input[type="text"],
+  select {
+    padding: 7px 8px;
+    font-size: 12px;
+  }
+
+  .add-section {
+    padding: 10px;
+    gap: 8px;
+  }
+
+  .form-actions {
+    flex-direction: column;
+    gap: 6px;
+  }
 }

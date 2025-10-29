@@ -126,7 +126,7 @@ function draw() {
     const dy = centralCharge.y - charge.y;
     const r = Math.sqrt(dx ** 2 + dy ** 2);
     if (r < 1e-9) {
-      resultsHTML += `<p style="margin: 0.5rem;">$\\vec{F}_${i + 1}: Indefinida (r = 0)$</p>`;
+      resultsHTML += `<p style="margin: 0.5rem 0;">$\\vec{F}_${i + 1} =$ Indefinida $(r = 0)$</p>`;
       return;
     }
 
@@ -152,8 +152,8 @@ function draw() {
     drawArrow(px, py, (Fx / Fm) * arrowScale, -(Fy / Fm) * arrowScale, arrowColor);
 
     // Mostrar datos por carga en notación científica
-    resultsHTML += `<p style="margin: 0.5rem;">$\\vec{F}_${i + 1} = ${formatSci(Fm)} N$ (${tipo})</p>`;
-    resultsHTML += `<p style="margin: 0.25rem;">$\\vec{F}_x = ${formatSci(Fx)} N$</p> <p style="margin: 0.25rem;">$\\vec{F}_y = ${formatSci(Fy)} N$</p><br>`;
+    resultsHTML += `<p style="margin: 0.5rem 0;">$\\vec{F}_${i + 1} = ${formatSci(Fm)} N$ (${tipo})</p>`;
+    resultsHTML += `<p style="margin: 0.25rem 0;">$\\vec{F}_x = ${formatSci(Fx)} N$</p> <p style="margin: 0.25rem 0;">$\\vec{F}_y = ${formatSci(Fy)} N$</p><br>`;
   });
 
   // === Dibuja la carga central ===
@@ -167,11 +167,11 @@ function draw() {
   const angleRad = Math.atan2(totalFy, totalFx); // en radianes, respecto +x
   const angleDeg = angleRad * 180 / Math.PI;
 
-  resultsHTML += `<hr><b>Fuerza Total</b><br>`;
-  resultsHTML += `<p style="margin: 0.5rem;">$F_{Total} = ${formatSci(F_total)} N$</p>`;
-  resultsHTML += `<p style="margin: 0.5rem;">$\\vec{F_x} = ${formatSci(totalFx)} N$</p>`;
-  resultsHTML += `<p style="margin: 0.5rem;">$\\vec{F_y} = ${formatSci(totalFy)} N$</p>`;
-  resultsHTML += `<p style="margin: 0.5rem;">Ángulo = ${angleDeg.toFixed(2)}° respecto a $+x$<br></p>`;
+  resultsHTML += `<hr><p style="margin: 0.5rem 0; margin-top: 1rem;"><b>Fuerza Total</b><br></p>`;
+  resultsHTML += `<p style="margin: 0.25rem 0;">$F_{Total} = ${formatSci(F_total)} N$</p>`;
+  resultsHTML += `<p style="margin: 0.25rem 0;">$\\vec{F_x} = ${formatSci(totalFx)} N$</p>`;
+  resultsHTML += `<p style="margin: 0.25rem 0;">$\\vec{F_y} = ${formatSci(totalFy)} N$</p>`;
+  resultsHTML += `<p style="margin: 0.25rem 0;">Ángulo = ${angleDeg.toFixed(2)}° respecto a $+x$<br></p>`;
 
   // === Dibujar flecha neta en el origen (verde) ===
   if (F_total > 0) {
