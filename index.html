@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <title>Simulador de Fuerza Eléctrica</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="input-select.css">
+
   <!-- 🔹 MathJax para renderizar fórmulas -->
   <script>
     window.MathJax = {
@@ -41,8 +43,10 @@
       <h2>Resultados</h2>
       <button id="helpButton" title="Ayuda">❔</button>
     </div>
-    <hr/>
-    <div id="results"></div>
+
+    <div id="results" style="flex: 1; overflow-y: auto; max-height: calc(100vh - 150px); padding: 5px 0;">
+      <hr/>
+    </div>
   </div>
 
   <div id="tooltip"></div>
@@ -98,7 +102,6 @@
     <hr/>
     <p style="font-size:14px; color:#aaa;">💡 Consejo: Las fórmulas se calculan automáticamente en el simulador usando estos mismos principios, pero con la suma vectorial de todas las fuerzas.</p>
   </div>
-
 
   <script src="modal.js"></script>
   <script src="script.js"></script>

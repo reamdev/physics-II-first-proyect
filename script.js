@@ -15,6 +15,10 @@ const resultsDiv = document.getElementById("results");
 
 // === Agregar carga ===
 document.getElementById("addCharge").addEventListener("click", () => {
+  if (charges.length >= 5) {
+    return alert("Máximo 5 cargas permitidas");
+  }
+
   const type = document.getElementById("chargeType").value;
   const magnitude = parseFloat(document.getElementById("chargeValue").value);
   if (isNaN(magnitude)) return alert("Ingresa una magnitud válida");
@@ -81,10 +85,12 @@ function updateChargeList() {
 function formatSci(num, fractionDigits = 2) {
   if (!isFinite(num)) return String(num);
   if (num === 0) return "0";
+
   const s = num.toExponential(fractionDigits); // ej "3.02e-4"
   const [mantissa, expStr] = s.split('e');
   const exp = parseInt(expStr, 10);
-  return `${mantissa}×10<sup>${exp}</sup>`;
+
+  return `${mantissa} \\times 10^${exp}`;
 }
 
 function draw() {
@@ -120,7 +126,7 @@ function draw() {
     const dy = centralCharge.y - charge.y;
     const r = Math.sqrt(dx ** 2 + dy ** 2);
     if (r < 1e-9) {
-      resultsHTML += `<b>F${i + 1}</b>: Indefinida (r = 0)<br>`;
+      resultsHTML += `<p style="margin: 0.5rem;">$\\vec{F}_${i + 1}: Indefinida (r = 0)$</p>`;
       return;
     }
 
@@ -146,8 +152,8 @@ function draw() {
     drawArrow(px, py, (Fx / Fm) * arrowScale, -(Fy / Fm) * arrowScale, arrowColor);
 
     // Mostrar datos por carga en notación científica
-    resultsHTML += `<b>F${i + 1}</b>: ${formatSci(Fm)} N (${tipo})<br>`;
-    resultsHTML += `Fx = ${formatSci(Fx)} N<br>Fy = ${formatSci(Fy)} N<br><br>`;
+    resultsHTML += `<p style="margin: 0.5rem;">$\\vec{F}_${i + 1} = ${formatSci(Fm)} N$ (${tipo})</p>`;
+    resultsHTML += `<p style="margin: 0.25rem;">$\\vec{F}_x = ${formatSci(Fx)} N$</p> <p style="margin: 0.25rem;">$\\vec{F}_y = ${formatSci(Fy)} N$</p><br>`;
   });
 
   // === Dibuja la carga central ===
@@ -162,10 +168,10 @@ function draw() {
   const angleDeg = angleRad * 180 / Math.PI;
 
   resultsHTML += `<hr><b>Fuerza Total</b><br>`;
-  resultsHTML += `Fx = ${formatSci(totalFx)} N<br>`;
-  resultsHTML += `Fy = ${formatSci(totalFy)} N<br>`;
-  resultsHTML += `|F| = ${formatSci(F_total)} N<br>`;
-  resultsHTML += `Ángulo = ${angleDeg.toFixed(2)}° respecto a +x<br>`;
+  resultsHTML += `<p style="margin: 0.5rem;">$F_{Total} = ${formatSci(F_total)} N$</p>`;
+  resultsHTML += `<p style="margin: 0.5rem;">$\\vec{F_x} = ${formatSci(totalFx)} N$</p>`;
+  resultsHTML += `<p style="margin: 0.5rem;">$\\vec{F_y} = ${formatSci(totalFy)} N$</p>`;
+  resultsHTML += `<p style="margin: 0.5rem;">Ángulo = ${angleDeg.toFixed(2)}° respecto a $+x$<br></p>`;
 
   // === Dibujar flecha neta en el origen (verde) ===
   if (F_total > 0) {
@@ -177,6 +183,13 @@ function draw() {
 
   // Renderiza HTML con <sup>
   resultsDiv.innerHTML = resultsHTML;
+
+  // === RENDERIZAR LATEX CON MATHJAX ===
+  if (window.MathJax) {
+    MathJax.typesetPromise([resultsDiv]).catch(err => {
+      console.error('Error rendering MathJax:', err);
+    });
+  }
 }
 
 // === Dibuja flecha ===

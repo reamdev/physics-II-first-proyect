@@ -16,6 +16,10 @@ body {
   overflow-y: auto;
 }
 
+.right-panel {
+  width: 300px;
+}
+
 .left-panel h2, .right-panel h2 {
   margin-bottom: 10px;
 }
@@ -148,16 +152,16 @@ label {
 }
 
 /* 🔹 Scrollbar estilo (para Chrome, Edge, etc.) */
-.modal-content::-webkit-scrollbar {
+::-webkit-scrollbar {
   width: 8px;
 }
 
-.modal-content::-webkit-scrollbar-thumb {
+::-webkit-scrollbar-thumb {
   background-color: #007bff;
   border-radius: 4px;
 }
 
-.modal-content::-webkit-scrollbar-track {
+::-webkit-scrollbar-track {
   background-color: #2a2f3a;
 }
 

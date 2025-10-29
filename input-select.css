@@ -1,0 +1,234 @@
+/* ===== INPUTS Y SELECTS MEJORADOS ===== */
+
+/* Inputs de texto y número */
+input[type="number"],
+input[type="text"] {
+  background: #2a2f3a;
+  border: 2px solid #3a3f4a;
+  border-radius: 6px;
+  color: white;
+  padding: 8px 10px;
+  font-size: 13px;
+  transition: all 0.3s ease;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+input[type="number"]:focus,
+input[type="text"]:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
+  background: #323846;
+}
+
+input[type="number"]:hover,
+input[type="text"]:hover {
+  border-color: #4a4f5a;
+}
+
+/* SELECTS DIFERENCIABLES PERO DISCRETOS */
+select {
+  background: #2a2f3a;
+  border: 2px solid #007bff; /* Borde azul para diferenciar */
+  border-radius: 6px;
+  color: white;
+  padding: 9px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  width: 100%;
+  cursor: pointer;
+  appearance: none;
+  
+  /* Icono moderado */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 14 14' fill='none'%3E%3Cpath d='M3 5L7 9L11 5' stroke='%23007bff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 14px;
+  
+  /* Sombra sutil */
+  box-shadow: 0 2px 6px rgba(0, 123, 255, 0.15);
+}
+
+/* Estados del select */
+select:hover {
+  border-color: #0056b3;
+  background-color: #323846;
+  box-shadow: 0 2px 8px rgba(0, 123, 255, 0.2);
+}
+
+select:focus {
+  outline: none;
+  border-color: #4ecdc4;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.15);
+  background-color: #323846;
+}
+
+/* Select específico para tipo de carga - DIFERENCIADO PERO NO EXAGERADO */
+#chargeType {
+  background: #2a2f3a;
+  border: 2px solid #007bff;
+  border-radius: 6px;
+  color: white;
+  padding: 9px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+  
+  /* Icono un poco más visible */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='M4 6L8 10L12 6' stroke='%23007bff' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-position: right 12px center;
+  background-size: 16px;
+  
+  /* Sombra un poco más pronunciada que los inputs */
+  box-shadow: 0 2px 8px rgba(0, 123, 255, 0.2);
+}
+
+#chargeType:hover {
+  border-color: #4ecdc4;
+  box-shadow: 0 3px 10px rgba(0, 123, 255, 0.25);
+}
+
+#chargeType:focus {
+  border-color: #ff6b6b;
+  box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.15);
+}
+
+/* Opciones del select */
+select option {
+  background: #2a2f3a;
+  color: white;
+  padding: 10px;
+  font-size: 13px;
+}
+
+/* Colores específicos para cada tipo de carga */
+#chargeType option[value="positive"] {
+  background: #2a2f3a;
+  color: #ff6b6b;
+  font-weight: 600;
+}
+
+#chargeType option[value="negative"] {
+  background: #2a2f3a;
+  color: #4ecdc4;
+  font-weight: 600;
+}
+
+#chargeType option:checked {
+  background: #007bff !important;
+  color: white !important;
+  font-weight: 600;
+}
+
+/* Contenedores de formularios mejorados */
+.add-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+  background: #252935;
+  padding: 15px;
+  border-radius: 8px;
+  border-left: 4px solid #007bff;
+}
+
+.add-section label {
+  font-weight: 600;
+  color: #e0e0e0;
+  font-size: 13px;
+  margin-bottom: -8px;
+}
+
+/* Inputs dentro de los items de carga */
+.charge-item input[type="number"] {
+  width: 80px;
+  background: #323846;
+  border: 1px solid #444;
+  padding: 4px 6px;
+  font-size: 12px;
+}
+
+.charge-item input[type="number"]:focus {
+  border-color: #007bff;
+  background: #3a3f4a;
+}
+
+/* Grupo de controles con iconos */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-group label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #ccc;
+}
+
+/* Estados de validación */
+input:invalid {
+  border-color: #ff6b6b;
+}
+
+input:valid {
+  border-color: #4ecdc4;
+}
+
+/* Placeholder personalizado */
+input::placeholder {
+  color: #888;
+  font-size: 12px;
+}
+
+/* Quitar flechas de inputs number */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+/* Botones de acción en formularios */
+.form-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.form-actions button {
+  flex: 1;
+  padding: 10px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* Estilo específico para el input de magnitud */
+#chargeValue {
+  background: #2a2f3a;
+  border: 2px solid #3a3f4a;
+  font-weight: 600;
+}
+
+#chargeValue:focus {
+  border-color: #4ecdc4;
+  box-shadow: 0 0 0 3px rgba(78, 205, 196, 0.2);
+}
+
+/* Indicadores visuales para tipos de carga */
+.charge-type-positive {
+  color: #ff6b6b;
+  font-weight: bold;
+}
+
+.charge-type-negative {
+  color: #4ecdc4;
+  font-weight: bold;
+}
