@@ -23,7 +23,14 @@ document.getElementById("addCharge").addEventListener("click", () => {
   const magnitude = parseFloat(document.getElementById("chargeValue").value);
   if (isNaN(magnitude)) return alert("Ingresa una magnitud válida");
   const q = type === "positive" ? magnitude : -magnitude;
-  const newCharge = { x: Math.random() * 6 - 3, y: Math.random() * 4 - 2, q };
+
+  // Generar posiciones aleatorias dentro de los límites
+  const newCharge = {
+    x: parseFloat((Math.random() * 16 - 8).toFixed(1)), // Entre -8 y 8
+    y: parseFloat((Math.random() * 10 - 5).toFixed(1)), // Entre -5 y 5
+    q
+  };
+
   charges.push(newCharge);
   updateChargeList();
   draw();
@@ -48,8 +55,8 @@ function updateChargeList() {
       <b>Carga ${i + 1}</b>
       <button class="delete-btn" data-index="${i}">❌</button>
       <label>Tipo: ${c.q > 0 ? "Positiva (+)" : "Negativa (-)"}</label>
-      <label>X: <input type="number" step="0.1" value="${c.x.toFixed(2)}" data-index="${i}" data-attr="x"></label>
-      <label>Y: <input type="number" step="0.1" value="${c.y.toFixed(2)}" data-index="${i}" data-attr="y"></label>
+      <label>X: <input type="number" step="0.1" min="-8" max="8" value="${c.x.toFixed(2)}" data-index="${i}" data-attr="x" title="Valor entre -8 y 8"></label>
+      <label>Y: <input type="number" step="0.1" min="-5" max="5" value="${c.y.toFixed(2)}" data-index="${i}" data-attr="y" title="Valor entre -5 y 5"></label>
       <label>Magnitud (C): <input type="number" step="0.1" value="${(c.q).toFixed(2)}" data-index="${i}" data-attr="q"></label>
     `;
     chargeList.appendChild(div);
@@ -60,12 +67,47 @@ function updateChargeList() {
     input.addEventListener("input", (e) => {
       const idx = e.target.dataset.index;
       const attr = e.target.dataset.attr;
-      const value = parseFloat(e.target.value);
+      let value = parseFloat(e.target.value);
 
-      if (attr === "x" || attr === "y") charges[idx][attr] = value;
-      if (attr === "q") charges[idx].q = Math.sign(charges[idx].q) * value;
+      // Validar y ajustar automáticamente los límites para X e Y
+      if (attr === "x") {
+        if (value < -8) value = -8;
+        if (value > 8) value = 8;
+        charges[idx][attr] = value;
+        e.target.value = value.toFixed(2); // Actualizar input con valor corregido
+      } else if (attr === "y") {
+        if (value < -5) value = -5;
+        if (value > 5) value = 5;
+        charges[idx][attr] = value;
+        e.target.value = value.toFixed(2); // Actualizar input con valor corregido
+      } else if (attr === "q") {
+        charges[idx].q = Math.sign(charges[idx].q) * value;
+      }
+
       updateChargeList();
       draw();
+    });
+
+    // También validar en el evento change (por si pegan valores o usan las flechas)
+    input.addEventListener("change", (e) => {
+      const idx = e.target.dataset.index;
+      const attr = e.target.dataset.attr;
+      let value = parseFloat(e.target.value);
+
+      if (attr === "x") {
+        if (value < -8) value = -8;
+        if (value > 8) value = 8;
+        charges[idx][attr] = value;
+        e.target.value = value.toFixed(2);
+      } else if (attr === "y") {
+        if (value < -5) value = -5;
+        if (value > 5) value = 5;
+        charges[idx][attr] = value;
+        e.target.value = value.toFixed(2);
+      }
+
+      // Solo redibujar si hubo cambio
+      if (attr === "x" || attr === "y") draw();
     });
   });
 
@@ -233,6 +275,7 @@ canvas.addEventListener("mousedown", (e) => {
   }
 });
 
+// En el evento mousemove del canvas, agregar validación:
 canvas.addEventListener("mousemove", (e) => {
   const rect = canvas.getBoundingClientRect();
   const mx = e.clientX - rect.left;
@@ -242,14 +285,21 @@ canvas.addEventListener("mousemove", (e) => {
 
   // Tooltip dinámico
   let hovered = false;
-  for (const c of charges) {
+  for (let i = 0; i < charges.length; i++) {
+    const c = charges[i];
     const px = cx + c.x * scale;
     const py = cy - c.y * scale;
     if (Math.hypot(mx - px, my - py) < 12) {
       tooltip.style.display = "block";
       tooltip.style.left = `${e.clientX}px`;
       tooltip.style.top = `${e.clientY}px`;
-      tooltip.innerText = c.q > 0 ? "Carga Positiva (+)" : "Carga Negativa (-)";
+
+      // Mostrar número de carga, tipo y magnitud
+      const chargeNumber = i + 1;
+      const chargeType = c.q > 0 ? "Positiva (+)" : "Negativa (-)";
+      const magnitude = Math.abs(c.q).toFixed(2);
+      tooltip.innerText = `Carga ${chargeNumber}: ${chargeType}\nMagnitud: ${magnitude} C`;
+
       tooltip.style.backgroundColor = c.q > 0 ? "rgba(255,0,0,0.8)" : "rgba(0,0,255,0.8)";
       hovered = true;
       break;
@@ -257,12 +307,21 @@ canvas.addEventListener("mousemove", (e) => {
   }
   if (!hovered) tooltip.style.display = "none";
 
-  // Movimiento y actualización en vivo
+  // Movimiento y actualización en vivo CON VALIDACIÓN
   if (selectedCharge !== null) {
-    charges[selectedCharge].x = (mx - cx) / scale - offsetX;
-    charges[selectedCharge].y = -(my - cy) / scale - offsetY;
+    let newX = (mx - cx) / scale - offsetX;
+    let newY = -(my - cy) / scale - offsetY;
+
+    // Aplicar límites automáticamente
+    if (newX < -8) newX = -8;
+    if (newX > 8) newX = 8;
+    if (newY < -5) newY = -5;
+    if (newY > 5) newY = 5;
+
+    charges[selectedCharge].x = newX;
+    charges[selectedCharge].y = newY;
     updateChargeList();
-    draw(); // 🔥 ahora recalcula y redibuja todo mientras mueves
+    draw();
   }
 });
 
