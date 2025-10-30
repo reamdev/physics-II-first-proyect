@@ -81,7 +81,17 @@ function updateChargeList() {
         charges[idx][attr] = value;
         e.target.value = value.toFixed(2); // Actualizar input con valor corregido
       } else if (attr === "q") {
-        charges[idx].q = Math.sign(charges[idx].q) * value;
+        // Permitir cambio de signo correctamente
+        if (e.target.value === "" || e.target.value === "-") {
+          // Estado temporal mientras el usuario escribe
+          return;
+        }
+
+        let numValue = parseFloat(e.target.value);
+        if (!isNaN(numValue)) {
+          charges[idx].q = numValue;
+          e.target.value = numValue.toString(); // Mantener el formato
+        }
       }
 
       updateChargeList();
