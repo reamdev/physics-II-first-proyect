@@ -14,6 +14,11 @@ body {
   overflow-y: auto; /* 🔥 Scroll de toda la página */
 }
 
+a {
+  text-decoration: none;
+  color: white;
+}
+
 /* Header principal */
 .main-header {
   background: linear-gradient(135deg, #1a1d26 0%, #2a2f3a 100%);
@@ -277,6 +282,10 @@ label {
   scrollbar-color: #007bff #2a2f3a;
 }
 
+#mobile-footer {
+  display: none;
+}
+
 /* ===== MEDIA QUERIES RESPONSIVE ===== */
 
 /* Tablets grandes y laptops pequeñas */
@@ -440,6 +449,24 @@ label {
     height: 24px;
     font-size: 0.7rem;
   }
+
+  #mobile-footer {
+    display: block;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: #111;
+    color: #fff;
+    text-align: center;
+    padding: 10px 0;
+    font-size: 14px;
+    z-index: 9999;
+  }
+
+  #mobile-footer p {
+    text-align: center;
+  }
 }
 
 /* Pantallas muy pequeñas (móviles en portrait) */
@@ -497,4 +524,34 @@ canvas {
   justify-content: center;
   align-items: center;
   margin-bottom: 20px;
+}
+
+.main-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;   /* Centra verticalmente la imagen con el bloque de texto */
+  gap: 12px;             /* Separación entre imagen y texto */
+}
+
+.career-logo {
+  width: 60px;
+  height: auto;
+}
+
+/* Ajuste para móvil */
+@media (max-width: 480px) {
+  .career-logo {
+    width: 45px;
+  }
+
+  .main-header {
+    gap: 8px;
+  }
+}
+
+/* Asegurar que el bloque h1+p quede alineado */
+.header-text {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;   /* Alinea el p para que quede a mitad del h1 */
 }
