@@ -265,11 +265,27 @@ function drawArrow(x, y, dx, dy, color) {
   ctx.fill();
 }
 
-// === Movimiento con mouse ===
-canvas.addEventListener("mousedown", (e) => {
+function getPointerPos(e, canvas) {
   const rect = canvas.getBoundingClientRect();
-  const mx = e.clientX - rect.left;
-  const my = e.clientY - rect.top;
+  let x, y;
+
+  if (e.touches && e.touches.length > 0) {
+    x = e.touches[0].clientX;
+    y = e.touches[0].clientY;
+  } else {
+    x = e.clientX;
+    y = e.clientY;
+  }
+
+  return {
+    x: x - rect.left,
+    y: y - rect.top
+  };
+}
+
+function pointerStart(e) {
+  e.preventDefault();
+  const { x: mx, y: my } = getPointerPos(e, canvas);
   const cx = canvas.width / 2;
   const cy = canvas.height / 2;
 
@@ -283,46 +299,40 @@ canvas.addEventListener("mousedown", (e) => {
       break;
     }
   }
-});
+}
 
-// En el evento mousemove del canvas, agregar validación:
-canvas.addEventListener("mousemove", (e) => {
-  const rect = canvas.getBoundingClientRect();
-  const mx = e.clientX - rect.left;
-  const my = e.clientY - rect.top;
+canvas.addEventListener("mousedown", pointerStart);
+canvas.addEventListener("touchstart", pointerStart);
+
+function pointerMove(e) {
+  const { x: mx, y: my } = getPointerPos(e, canvas);
   const cx = canvas.width / 2;
   const cy = canvas.height / 2;
 
-  // Tooltip dinámico
-  let hovered = false;
-  for (let i = 0; i < charges.length; i++) {
-    const c = charges[i];
-    const px = cx + c.x * scale;
-    const py = cy - c.y * scale;
-    if (Math.hypot(mx - px, my - py) < 12) {
-      tooltip.style.display = "block";
-      tooltip.style.left = `${e.clientX}px`;
-      tooltip.style.top = `${e.clientY}px`;
-
-      // Mostrar número de carga, tipo y magnitud
-      const chargeNumber = i + 1;
-      const chargeType = c.q > 0 ? "Positiva (+)" : "Negativa (-)";
-      const magnitude = Math.abs(c.q).toFixed(2);
-      tooltip.innerText = `Carga ${chargeNumber}: ${chargeType}\nMagnitud: ${magnitude} C`;
-
-      tooltip.style.backgroundColor = c.q > 0 ? "rgba(255,0,0,0.8)" : "rgba(0,0,255,0.8)";
-      hovered = true;
-      break;
+  // Tooltip (solo en mouse)
+  if (!e.touches) {
+    let hovered = false;
+    for (let i = 0; i < charges.length; i++) {
+      const c = charges[i];
+      const px = cx + c.x * scale;
+      const py = cy - c.y * scale;
+      if (Math.hypot(mx - px, my - py) < 12) {
+        tooltip.style.display = "block";
+        tooltip.style.left = `${e.clientX}px`;
+        tooltip.style.top = `${e.clientY}px`;
+        tooltip.innerText = `Carga ${i + 1}: ${c.q > 0 ? "Positiva" : "Negativa"}\nMagnitud: ${Math.abs(c.q).toFixed(2)} C`;
+        tooltip.style.backgroundColor = c.q > 0 ? "rgba(255,0,0,0.8)" : "rgba(0,0,255,0.8)";
+        hovered = true;
+        break;
+      }
     }
+    if (!hovered) tooltip.style.display = "none";
   }
-  if (!hovered) tooltip.style.display = "none";
 
-  // Movimiento y actualización en vivo CON VALIDACIÓN
   if (selectedCharge !== null) {
     let newX = (mx - cx) / scale - offsetX;
     let newY = -(my - cy) / scale - offsetY;
 
-    // Aplicar límites automáticamente
     if (newX < -8) newX = -8;
     if (newX > 8) newX = 8;
     if (newY < -5) newY = -5;
@@ -333,12 +343,19 @@ canvas.addEventListener("mousemove", (e) => {
     updateChargeList();
     draw();
   }
-});
+}
 
-canvas.addEventListener("mouseup", () => selectedCharge = null);
-canvas.addEventListener("mouseleave", () => {
+canvas.addEventListener("mousemove", pointerMove);
+canvas.addEventListener("touchmove", pointerMove);
+
+function pointerEnd() {
   selectedCharge = null;
   tooltip.style.display = "none";
-});
+}
+
+canvas.addEventListener("mouseup", pointerEnd);
+canvas.addEventListener("mouseleave", pointerEnd);
+canvas.addEventListener("touchend", pointerEnd);
+canvas.addEventListener("touchcancel", pointerEnd);
 
 draw();
