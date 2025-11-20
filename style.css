@@ -285,7 +285,7 @@ label {
     flex-direction: column;
     height: auto;
   }
-  
+
   .left-panel, .right-panel {
     width: 100%;
     min-width: auto;
@@ -293,41 +293,41 @@ label {
     overflow-y: auto; /* 🔥 Scroll individual en móvil/tablet */
     min-height: auto; /* 🔥 Reset altura mínima */
   }
-  
+
   .canvas-container {
     order: -1;
     min-height: 400px;
     align-items: center; /* 🔥 Centrar en móvil */
   }
-  
+
   canvas {
     min-height: 400px; /* 🔥 Altura ajustada para móvil */
   }
-  
+
   .results-container {
     min-height: auto; /* 🔥 Reset altura mínima */
   }
-  
+
   .main-header h1 {
     font-size: 1.7rem;
   }
-  
+
   .subtitle {
     font-size: 0.9rem;
   }
-  
+
   /* En móvil/tablet, los paneles tienen scroll individual */
   .left-panel::-webkit-scrollbar,
   .right-panel::-webkit-scrollbar {
     width: 8px;
   }
-  
+
   .left-panel::-webkit-scrollbar-thumb,
   .right-panel::-webkit-scrollbar-thumb {
     background-color: #007bff;
     border-radius: 4px;
   }
-  
+
   .left-panel::-webkit-scrollbar-track,
   .right-panel::-webkit-scrollbar-track {
     background-color: #2a2f3a;
@@ -339,32 +339,32 @@ label {
   .main-header {
     padding: 15px;
   }
-  
+
   .main-header h1 {
     font-size: 1.5rem;
   }
-  
+
   .subtitle {
     font-size: 0.85rem;
   }
-  
+
   .left-panel, .right-panel {
     padding: 12px;
     max-height: 250px;
   }
-  
+
   .canvas-container {
     min-height: 350px;
   }
-  
+
   canvas {
     min-height: 350px;
   }
-  
+
   .add-section {
     padding: 12px;
   }
-  
+
   .charge-item {
     padding: 10px;
   }
@@ -375,56 +375,66 @@ label {
   body {
     font-size: 14px;
   }
-  
+
   .main-header {
     padding: 12px 10px;
   }
-  
+
   .main-header h1 {
     font-size: 1.3rem;
   }
-  
+
+  .main-container {
+    padding: 20px;
+    max-height: 100%;
+  }
+
   .subtitle {
     font-size: 0.8rem;
   }
-  
+
+  .left-panel {
+    margin-bottom: 20px;
+  }
+
   .left-panel, .right-panel {
     padding: 10px;
     max-height: 220px;
+    border-radius: 15px;
   }
-  
+
   .left-panel h2, .right-panel h2 {
     font-size: 1.1rem;
   }
-  
+
   .canvas-container {
     min-height: 300px;
     padding: 5px;
   }
-  
+
   canvas {
     min-height: 300px;
   }
-  
+
   .add-section {
     padding: 10px;
     gap: 8px;
   }
-  
+
   button {
     padding: 8px;
     font-size: 13px;
   }
-  
+
   .charge-item {
     padding: 8px;
     font-size: 12px;
   }
-  
+
   .modal-content {
     padding: 20px 15px;
   }
-  
+
   #helpButton {
     width: 24px;
     height: 24px;
@@ -473,4 +483,18 @@ label {
 * {
   scrollbar-width: thin;
   scrollbar-color: #007bff #1a1d26;
+}
+
+canvas {
+  max-width: 100% !important;
+  height: auto !important;
+}
+
+.canvas-container {
+  width: 100%;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
 }

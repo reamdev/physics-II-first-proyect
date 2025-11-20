@@ -49,7 +49,6 @@ function updateChargeList() {
   charges.forEach((c, i) => {
     const div = document.createElement("div");
     div.className = "charge-item";
-    console.log(c.q);
 
     div.innerHTML = `
       <b>Carga ${i + 1}</b>
@@ -189,9 +188,6 @@ function draw() {
     const Fx = k * centralCharge.q * charge.q * dx / Math.pow(r, 3);
     const Fy = k * centralCharge.q * charge.q * dy / Math.pow(r, 3);
 
-    console.log(`Fuerza X: ${Fx}`);
-    console.log(`Fuerza Y: ${Fy}`);
-
     totalFx += Fx;
     totalFy += Fy;
 
@@ -266,6 +262,7 @@ function drawArrow(x, y, dx, dy, color) {
 }
 
 function getPointerPos(e, canvas) {
+  debugger;
   const rect = canvas.getBoundingClientRect();
   let x, y;
 
@@ -302,9 +299,14 @@ function pointerStart(e) {
 }
 
 canvas.addEventListener("mousedown", pointerStart);
-canvas.addEventListener("touchstart", pointerStart);
+canvas.addEventListener("touchstart", pointerStart, { passive: false });
 
 function pointerMove(e) {
+  // ❗ Bloquear el scroll cuando se arrastra una carga en móvil
+  if (e.touches) {
+    e.preventDefault();
+  }
+
   const { x: mx, y: my } = getPointerPos(e, canvas);
   const cx = canvas.width / 2;
   const cy = canvas.height / 2;
@@ -346,7 +348,7 @@ function pointerMove(e) {
 }
 
 canvas.addEventListener("mousemove", pointerMove);
-canvas.addEventListener("touchmove", pointerMove);
+canvas.addEventListener("touchmove", pointerMove, { passive: false });
 
 function pointerEnd() {
   selectedCharge = null;
@@ -355,7 +357,7 @@ function pointerEnd() {
 
 canvas.addEventListener("mouseup", pointerEnd);
 canvas.addEventListener("mouseleave", pointerEnd);
-canvas.addEventListener("touchend", pointerEnd);
-canvas.addEventListener("touchcancel", pointerEnd);
+canvas.addEventListener("touchend", pointerEnd, { passive: false });
+canvas.addEventListener("touchcancel", pointerEnd, { passive: false });
 
 draw();
