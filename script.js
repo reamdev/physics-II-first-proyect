@@ -262,22 +262,22 @@ function drawArrow(x, y, dx, dy, color) {
 }
 
 function getPointerPos(e, canvas) {
-  debugger;
   const rect = canvas.getBoundingClientRect();
-  let x, y;
+  let clientX, clientY;
 
   if (e.touches && e.touches.length > 0) {
-    x = e.touches[0].clientX;
-    y = e.touches[0].clientY;
+    clientX = e.touches[0].clientX;
+    clientY = e.touches[0].clientY;
   } else {
-    x = e.clientX;
-    y = e.clientY;
+    clientX = e.clientX;
+    clientY = e.clientY;
   }
 
-  return {
-    x: x - rect.left,
-    y: y - rect.top
-  };
+  // Escalar correctamente las coordenadas al espacio REAL del canvas
+  const x = (clientX - rect.left) * (canvas.width / rect.width);
+  const y = (clientY - rect.top) * (canvas.height / rect.height);
+
+  return { x, y };
 }
 
 function pointerStart(e) {
